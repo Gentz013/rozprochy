@@ -61,12 +61,36 @@ public class HelloScreen extends JFrame implements ActionListener{
 
         if(singlePlayerGameModeButton.isSelected()){
             //single player mode
-            //JOptionPane.showMessageDialog(this, "Single player mode selected");
             dispose();
             new GameScreen("Tic Tac Toe");
         } else {
+
             //multi player mode
-            JOptionPane.showMessageDialog(this, "Multi player mode is not currently available");
+            dispose();
+            JFrame inputFrame = new JFrame();
+            inputFrame.setTitle("Please enter your nickname");
+            inputFrame.setSize(300,100);
+            inputFrame.setResizable(false);
+
+            JPanel inputPanel = new JPanel();
+
+            JTextField jTextField = new JTextField(20);
+            JButton inputFrameButton = new JButton("OK");
+
+            inputFrameButton.addActionListener(e1 -> {
+                String nickname = jTextField.getText();
+                System.out.println(nickname);
+                inputFrame.dispose();
+                new ClientServer(nickname);
+            });
+
+            inputPanel.add(jTextField);
+            inputPanel.add(inputFrameButton);
+            inputFrame.add(inputPanel);
+            inputFrame.setVisible(true);
+
+
+
 
         }
 

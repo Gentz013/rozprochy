@@ -44,4 +44,12 @@ public class ServerManager implements IServerManager {
 
         }
     }
+
+    @Override
+    public void printAllPlayers() throws RemoteException {
+        System.out.println("---Server Players----");
+        for(Player p : players){
+            System.out.print(p.getNickname() + ", ");
+        }
+    }
 }

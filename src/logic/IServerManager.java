@@ -13,4 +13,5 @@ public interface IServerManager extends Remote {
 
     void register(Player player) throws RemoteException, PlayerRejectedException;
     void chooseGame(Player player, int gametype) throws RemoteException, PlayerRejectedException;
+    void printAllPlayers() throws RemoteException;
 }

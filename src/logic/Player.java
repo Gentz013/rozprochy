@@ -1,9 +1,11 @@
 package logic;
 
+import java.io.Serializable;
+
 /**
  * Created by Jan on 4/19/2015.
  */
-public class Player {
+public class Player implements Serializable{
     private String nickname;
 
     public Player(String nickname){
