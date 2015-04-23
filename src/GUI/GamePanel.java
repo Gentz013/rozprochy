@@ -22,24 +22,11 @@ public class GamePanel extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        System.out.println(board.isPlayerTurn());
 
-        if(board.ifGameWon() == 0) {
+        Point click_location = e.getPoint();
 
-            if(board.isPlayerTurn()) {
-                System.out.println(board.isPlayerTurn());
-
-                Point click_location = e.getPoint();
-
-                int x_coord = (int) click_location.getX() / 100;
-                int y_coord = (int) click_location.getY() / 100;
-
-                board.setBoardValue(x_coord, y_coord);
-            }
-
-
-            //System.out.println("(" + click_location.getX() + ", " + click_location.getY() + ")");
-        }
+        int x_coord = (int) click_location.getX() / 100;
+        int y_coord = (int) click_location.getY() / 100;
 
         repaint();
     }
@@ -66,11 +53,6 @@ public class GamePanel extends JPanel implements MouseListener {
 
     @Override
     public void paintComponent(Graphics g){
-
-
-        if(!board.isPlayerTurn()){
-            board.makeAIMove();
-        }
 
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;

@@ -1,11 +1,14 @@
-package logic;
+package GUI;
 
-import GUI.GameScreen;
+import logic.IServerManager;
+import logic.Player;
+import logic.PlayerRejectedException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 /**
  * Created by Jan on 4/21/2015.
@@ -15,10 +18,13 @@ public class HelloScreen extends JFrame implements ActionListener{
     private ButtonGroup gameModeButtonGroup;
     private JRadioButton singlePlayerGameModeButton;
     private JRadioButton multiPlayerGameModeButton;
+    private Player player;
+    private IServerManager serverManager;
 
 
-    public HelloScreen(){
-
+    public HelloScreen(Player player, IServerManager serverManager){
+        this.player=player;
+        this.serverManager = serverManager;
 
         singlePlayerGameModeButton = new JRadioButton("Singleplayer mode");
         singlePlayerGameModeButton.setSelected(true);
@@ -32,9 +38,6 @@ public class HelloScreen extends JFrame implements ActionListener{
 
         JLabel messageLabel = new JLabel("Please select your gamemode");
         JPanel labelPanel = new JPanel();
-        //labelPanel.add(messageLabel);
-        //messageLabel.setVisible(true);
-
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -47,7 +50,7 @@ public class HelloScreen extends JFrame implements ActionListener{
         buttonPanel.setVisible(true);
 
         setSize(300, 150);
-        setTitle("Tic Tac Toe");
+        setTitle("Hello " + player.getNickname() + " please select your gamemode");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(3, 1));
@@ -62,37 +65,23 @@ public class HelloScreen extends JFrame implements ActionListener{
         if(singlePlayerGameModeButton.isSelected()){
             //single player mode
             dispose();
-            new GameScreen("Tic Tac Toe");
+            try {
+                serverManager.chooseGame(player, 1);
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            } catch (PlayerRejectedException e1) {
+                e1.printStackTrace();
+            }
         } else {
-
             //multi player mode
             dispose();
-            JFrame inputFrame = new JFrame();
-            inputFrame.setTitle("Please enter your nickname");
-            inputFrame.setSize(300,100);
-            inputFrame.setResizable(false);
-
-            JPanel inputPanel = new JPanel();
-
-            JTextField jTextField = new JTextField(20);
-            JButton inputFrameButton = new JButton("OK");
-
-            inputFrameButton.addActionListener(e1 -> {
-                String nickname = jTextField.getText();
-                System.out.println(nickname);
-                inputFrame.dispose();
-                new ClientServer(nickname);
-            });
-
-            inputPanel.add(jTextField);
-            inputPanel.add(inputFrameButton);
-            inputFrame.add(inputPanel);
-            inputFrame.setVisible(true);
-
-
-
-
+            try {
+                serverManager.chooseGame(player, -1);
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            } catch (PlayerRejectedException e1) {
+                e1.printStackTrace();
+            }
         }
-
     }
 }

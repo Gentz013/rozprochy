@@ -1,5 +1,8 @@
 package logic;
 
+import logic.Player;
+import logic.PlayerRejectedException;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -8,10 +11,9 @@ import java.rmi.RemoteException;
  */
 public interface IServerManager extends Remote {
 
-    int SINGLE_PLAYER = 25342;
-    int MULTI_PLAYER = 45364;
+    public void register(Player player) throws RemoteException, PlayerRejectedException;
 
-    void register(Player player) throws RemoteException, PlayerRejectedException;
-    void chooseGame(Player player, int gametype) throws RemoteException, PlayerRejectedException;
-    void printAllPlayers() throws RemoteException;
+    public void chooseGame(Player player, int gameType) throws RemoteException, PlayerRejectedException;
+
+    public void doMove(Player player, BoardData gameBoard) throws RemoteException, PlayerRejectedException;
 }

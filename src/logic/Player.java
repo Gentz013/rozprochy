@@ -1,5 +1,7 @@
 package logic;
 
+import GUI.GameScreen;
+
 import java.io.Serializable;
 
 /**
@@ -7,9 +9,12 @@ import java.io.Serializable;
  */
 public class Player implements Serializable{
     private String nickname;
+    private IMoveListener moveListener;
+    private GameScreen gameScreen;
 
     public Player(String nickname){
         this.nickname = nickname;
+        gameScreen = new GameScreen(nickname);
     }
 
     @Override
@@ -28,11 +33,21 @@ public class Player implements Serializable{
         return nickname != null ? nickname.hashCode() : 0;
     }
 
+
+
     public String getNickname() {
         return nickname;
     }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public IMoveListener getMoveListener() {
+        return moveListener;
+    }
+
+    public void setMoveListener(IMoveListener moveListener) {
+        this.moveListener = moveListener;
     }
 }

@@ -1,5 +1,6 @@
 package logic;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -7,11 +8,10 @@ import java.util.Random;
 /**
  * Created by Jan on 4/19/2015.
  */
-public class BoardData{
+public class BoardData implements Serializable{
 
     private int[][] board;
-    private int turn = 1;
-    private int playerTurn = 0;
+    private Player winner;
 
     public BoardData(){
         board = new int[3][3];
@@ -20,42 +20,56 @@ public class BoardData{
             for(int j = 0; j < 3; j++)
                 board[i][j] = 0;
 
-        Random rand = new Random();
-
-        playerTurn = rand.nextDouble()-.5 < 0 ? -1 : 1;
-
     }
 
-    public int setBoardValue(int x, int y) {
-        try {
-
-            if (x < 0 || x > 3 || y < 0 || y > 3) throw new Exception("Incorrect dimension");
-
-            if(board[x][y] != 0) { return -1; }
-
-
-            board[x][y] = turn;
-            //turn = turn < 0 ? turn-1 : turn+1;
-            turn*=(-1);
-
-        } catch (Exception e){
-            System.err.println("wrong arguments");
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] < 0)
+                    builder.append("X");
+                else if (board[i][j] > 0)
+                    builder.append("O");
+                else builder.append(".");
+            }
+            builder.append("\n");
         }
-
-        return 0;
+        return builder.toString();
     }
 
-    public int getBoardValue(int x, int y)  {
+    private void debug_board(){
+        System.out.println("board debug");
+        for(int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(board[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public boolean doMoveIfProper(int x, int y, int symbol, IServerManager manager, Player player)
+            throws RemoteException, PlayerRejectedException {
         try {
 
             if (x < 0 || x > 3 || y < 0 || y > 3) throw new Exception("Incorrect dimension");
 
-            return board[x][y];
+            //debug_board();
+            System.out.println(x + " " + y + " s= " + symbol);
+            if (board[x][y] == 0) {
+                //cell is empty
+                board[x][y] = symbol;
+                manager.doMove(player, this);
+                return true;
+            }
 
-        } catch (Exception e){
+
+        } catch (Exception e) {
             System.err.println("wrong dimensions");
-            return 0;
         }
+
+        return false;
+
     }
 
     /**
@@ -65,8 +79,44 @@ public class BoardData{
      * 1..8 how the game was won for GUI
      * @return
      */
-    public int ifGameWon(){
+    public int ifGameWon(Player playerOne, Player playerTwo){
         //if (Math.abs(turn) > 9) return -1;
+
+        for(int i = 0; i < 3; i++)
+            if(board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != 0){
+                setWinner(playerOne, playerTwo, board[0][i]);
+                return 1+i;
+            }
+
+        for(int i = 0; i < 3; i++)
+            if(board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != 0){
+                setWinner(playerOne, playerTwo, board[i][0]);
+                //System.out.println(board[i][0] + "|" + board[i][1]+ "|" + board[i][2]);
+                return 4+i;
+            }
+
+        if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != 0){
+            setWinner(playerOne, playerTwo, board[0][0]);
+            return 7;
+        }
+
+        if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != 0){
+            setWinner(playerOne, playerTwo, board[0][2]);
+            return 8;
+        }
+
+        boolean flag = false;
+        for(int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if(board[i][j] == 0) flag = true;
+
+        if(!flag) return 10;
+
+
+        return 0;
+    }
+
+    public int ifGameWon(){
 
         for(int i = 0; i < 3; i++)
             if(board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != 0){
@@ -89,28 +139,27 @@ public class BoardData{
         return 0;
     }
 
-    public void makeAIMove(){
-        SecureRandom random = new SecureRandom();
 
-        int x_coord, y_coord;
-        int numOfTries = 0;
-
-        do {
-
-            int value = Math.abs(random.nextInt() % 9);
-
-            x_coord = value / 3;
-            y_coord = value % 3;
-            numOfTries++;
-
-        } while (setBoardValue(x_coord, y_coord) < 0);
-
-        System.out.println("AI moves chooses position " + "(" + x_coord + "," + y_coord + ")" + " after " + numOfTries + " tries");
-
+    private void setWinner(Player playerOne, Player playerTwo,
+                           int winnnigCell) {
+        winner = (winnnigCell < 0) ? playerOne : playerTwo;
     }
 
-    public boolean isPlayerTurn(){
-        return (turn < 0 && playerTurn < 0) || (turn > 0 && playerTurn > 0) ? true : false;
+    public int getBoardValue(int x, int y)  {
+        try {
+
+            if (x < 0 || x > 3 || y < 0 || y > 3) throw new Exception("Incorrect dimension");
+
+            return board[x][y];
+
+        } catch (Exception e){
+            System.err.println("wrong dimensions");
+            return 0;
+        }
+    }
+
+    public Player getWinner(){
+        return winner;
     }
 
 }

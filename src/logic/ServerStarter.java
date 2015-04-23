@@ -12,7 +12,7 @@ import java.util.Properties;
 /**
  * Created by Jan on 4/19/2015.
  */
-public class GameServer {
+public class ServerStarter {
 
     public static final String PROPERTY_FILE = "serverConf.properties";
 
@@ -23,7 +23,7 @@ public class GameServer {
     public static IServerManager serverManagerImpl;
 
 
-    public GameServer(){
+    public ServerStarter(){
         initProperties();
     }
 
